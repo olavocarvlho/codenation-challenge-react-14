@@ -1,5 +1,5 @@
 import React from "react";
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
 
 import "./Contact.scss";
 
@@ -28,7 +28,7 @@ const Contact = ({ data }) => {
         {country}
       </span>
       <span className="contact__data" data-testid="contact-date">
-        08/04/2019
+        {admissionDate}
       </span>
       <span className="contact__data" data-testid="contact-company">
         {company}

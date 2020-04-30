@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { Fragment, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import Topbar from "./components/Topbar";
 import Filters from "./components/Filters";
@@ -9,35 +9,57 @@ import "./App.scss";
 
 const App = () => {
   const [contacts, setContacts] = useState([]);
-  const [filter, setFilterType] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
+  const [noResults, setNoResults] = useState(false);
+  const [sortFilter, setSortFilter] = useState("");
+  const [contactsList, setContactsList] = useState([]);
 
-  const handleFilters = (filter) => {
-    setFilterType(filter);
+  const handleSearch = (event) => {
+    //const toSearch = event.target.value;
+    const toSearch = event;
+    if (toSearch) {
+      setSearchFilter(toSearch);
+    } else {
+      setSearchFilter("");
+    }
+  };
+  const handleSortBy = (event) => {
+    //const toSort = event.target.dataset.sortby;
+    const toSort = event;
+    if (toSort) {
+      setSortFilter(toSort);
+    } else {
+      setSortFilter("");
+    }
   };
 
-  useEffect(() => {
-    const filterContacts = (filter) => {
-      switch (filter.type) {
-        case "sort_by":
-          const sorted = [...contacts].sort((a, b) =>
-            a[filter.value].localeCompare(b[filter.value])
-          );
-          setContacts(sorted);
-          break;
+  const searchByTerm = (term) => {
+    const sorted = [...contacts].filter((contact) =>
+      contact.name.toLowerCase().includes(term.toLowerCase())
+    );
+    if (sorted.length === 0 && term !== "") {
+      setNoResults(true);
+      console.log("aqui");
+    }
+    if (sorted.length > 0) {
+      setNoResults(false);
+      setContactsList(sorted);
+    }
+  };
 
-        case "text":
-          const found = [...contacts].filter((contact) =>
-            contact.name.toLowerCase().includes(filter.value.toLowerCase())
-          );
-          setContacts(found);
-          break;
-
-        default:
-          setContacts([...contacts]);
-      }
-    };
-    filterContacts(filter);
-  }, [filter]);
+  const sortByColumn = (term) => {
+    if (!noResults && searchFilter !== "" && contactsList.length > 0) {
+      const found = [...contactsList].sort((a, b) =>
+        a[term].localeCompare(b[term])
+      );
+      setContactsList(found);
+    } else {
+      const found = [...contacts].sort((a, b) =>
+        a[term].localeCompare(b[term])
+      );
+      setContactsList(found);
+    }
+  };
 
   useEffect(() => {
     fetch("https://5e82ac6c78337f00160ae496.mockapi.io/api/v1/contacts")
@@ -47,11 +69,29 @@ const App = () => {
       });
   }, []);
 
+  useEffect(() => {
+    searchByTerm(searchFilter);
+  }, [searchFilter]);
+
+  useEffect(() => {
+    sortByColumn(sortFilter);
+  }, [sortFilter]);
+
+  let output;
+  console.log({ contactsList, contacts, searchFilter });
+  if (!noResults && contactsList.length > 0) {
+    output = contactsList;
+  } else if (noResults) {
+    output = [];
+  } else {
+    output = contacts;
+  }
+
   return (
-    <div class="app" data-testid="app">
+    <div className="app" data-testid="app">
       <Topbar />
-      <Filters handleFilters={handleFilters} />
-      <Contacts data={contacts} />
+      <Filters handleSearch={handleSearch} handleSortBy={handleSortBy} />
+      <Contacts data={output} />
     </div>
   );
 };

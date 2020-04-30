@@ -2,23 +2,18 @@
 import React, { useState, useEffect } from "react";
 
 import "./Filters.scss";
-const Filters = ({ handleFilters }) => {
-  const [filter, setFilter] = useState({
-    type: "",
-    value: "",
-  });
-  const handleSearch = (event) => {
-    setFilter({
-      type: event.target.type,
-      value: event.target.value,
-    });
-  };
+const Filters = ({ handleSearch, handleSortBy }) => {
+  const [selected, setSelected] = useState({ type: "", value: "" });
 
   useEffect(() => {
-    if (typeof handleFilters === "function") {
-      handleFilters(filter);
+    if (selected.type === "search_by") {
+      handleSearch(selected.value);
     }
-  }, [filter]);
+    if (selected.type === "sort_by") {
+      handleSortBy(selected.value);
+    }
+    console.log(selected);
+  }, [selected]);
 
   return (
     <div className="container" data-testid="filters">
@@ -28,8 +23,9 @@ const Filters = ({ handleFilters }) => {
             type="text"
             className="filters__search__input"
             placeholder="Pesquisar"
-            value={filter.type === "text" ? filter.value : ""}
-            onChange={handleSearch}
+            onChange={(e) => {
+              setSelected({ type: "search_by", value: e.target.value });
+            }}
           />
 
           <button className="filters__search__icon">
@@ -38,88 +34,75 @@ const Filters = ({ handleFilters }) => {
         </div>
 
         <button
-          type="sort_by"
+          data-sortby="name"
           className={
-            filter.type === "sort_by" && filter.value === "name"
+            selected.value === "name"
               ? "filters__item is-selected"
               : "filters__item"
           }
           onClick={(e) => {
-            setFilter({
-              type: "sort_by",
-              value: "name",
-            });
+            setSelected({ type: "sort_by", value: e.target.dataset.sortby });
           }}
         >
-          Nome <i className="fas fa-sort-down" />
+          Nome <i className="fas fa-sort-down" data-sortby="name" />
         </button>
 
         <button
+          data-sortby="country"
           className={
-            filter.type === "sort_by" && filter.value === "country"
+            selected.value === "country"
               ? "filters__item is-selected"
               : "filters__item"
           }
-          onClick={() => {
-            setFilter({
-              type: "sort_by",
-              value: "country",
-            });
-            handleFilters("country");
+          onClick={(e) => {
+            setSelected({ type: "sort_by", value: e.target.dataset.sortby });
           }}
         >
-          País <i className="fas fa-sort-down" />
+          País <i className="fas fa-sort-down" data-sortby="country" />
         </button>
 
         <button
+          data-sortby="company"
           className={
-            filter.type === "sort_by" && filter.value === "company"
+            selected.value === "company"
               ? "filters__item is-selected"
               : "filters__item"
           }
-          onClick={() => {
-            setFilter({
-              type: "sort_by",
-              value: "company",
-            });
-            handleFilters("company");
+          onClick={(e) => {
+            setSelected({ type: "sort_by", value: e.target.dataset.sortby });
           }}
         >
-          Empresa <i className="fas fa-sort-down" />
+          Empresa <i className="fas fa-sort-down" data-sortby="company" />
         </button>
 
         <button
+          data-sortby="department"
           className={
-            filter.type === "sort_by" && filter.value === "department"
+            selected.value === "department"
               ? "filters__item is-selected"
               : "filters__item"
           }
-          onClick={() => {
-            setFilter({
-              type: "sort_by",
-              value: "department",
-            });
-            handleFilters("department");
+          onClick={(e) => {
+            setSelected({ type: "sort_by", value: e.target.dataset.sortby });
           }}
         >
-          Departamento <i className="fas fa-sort-down" />
+          Departamento{" "}
+          <i className="fas fa-sort-down" data-sortby="department" />
         </button>
 
         <button
+          data-sortby="admissionDate"
           className={
-            filter.type === "sort_by" && filter.value === "admissionDate"
+            selected.value === "admissionDate"
               ? "filters__item is-selected"
               : "filters__item"
           }
-          onClick={() => {
-            setFilter({
-              type: "sort_by",
-              value: "admissionDate",
-            });
-            handleFilters("admissionDate");
+          onClick={(e) => {
+            setSelected({ type: "sort_by", value: e.target.dataset.sortby });
           }}
         >
-          Data de admissão <i className="fas fa-sort-down" />
+          Data de admissão{" "}
+          <i className="fas fa-sort-down" data-sortby="admissionDate" />
         </button>
       </section>
     </div>
